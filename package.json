@@ -1,0 +1,12 @@
+{
+  "name": "najemniki",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongoose": "^5.3.8"
+  },
+  "scripts": {
+    "dev": "nodemon index.js",
+    "prod": "npm install && node index.js"
+  }
+}
