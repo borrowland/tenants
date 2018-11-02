@@ -27,4 +27,6 @@ router.put('/:id', tenantController.update);
  */
 router.delete('/:id', tenantController.remove);
 
+
+
 module.exports = router;
