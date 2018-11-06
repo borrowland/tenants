@@ -2,15 +2,16 @@ const express = require('express')
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+//init ETCD and watch variables
+require("./etcd/EtcdInit");
 
-var user = process.env.DB_USER;
-var password = process.env.DB_PASSWORD;
-var db_uri = process.env.DB_URI;
+var user = process.env.DB_USER || "root";
+var password = process.env.DB_PASSWORD || "password";
+var db_uri = process.env.DB_URI || "192.168.99.100:27017";
 
 mongoose.connect(`mongodb://${user}:${password}@${db_uri}/tenants?authSource=admin`);
 
 var db = mongoose.connection;
-
 
 const port = process.env.PORT || 8080;
 let app = express();

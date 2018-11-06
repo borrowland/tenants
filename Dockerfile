@@ -3,4 +3,4 @@ RUN mkdir /tenants
 WORKDIR /tenants
 COPY . /tenants
 CMD npm run prod
-EXPOSE 9999
+EXPOSE 8080
