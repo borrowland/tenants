@@ -12,6 +12,7 @@ router.get('/', tenantController.list);
  */
 router.get('/:id', tenantController.show);
 
+router.post('/generateDummies', tenantController.generateDummies);
 /*
  * POST
  */

@@ -1,5 +1,5 @@
 {
-  "name": "najemniki",
+  "name": "tenants",
   "version": "0.0.1",
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -12,5 +12,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "prod": "npm install && node index.js"
+  },
+  "devDependencies": {
+    "mongoose-dummy": "^1.0.8"
   }
 }

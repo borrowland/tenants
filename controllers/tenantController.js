@@ -1,4 +1,5 @@
 var tenantModel = require('../models/tenantModel.js');
+var factory = require('../models/factory.js');
 
 /**
  * tenantController.js
@@ -27,7 +28,9 @@ module.exports = {
      */
     show: function (req, res) {
         var id = req.params.id;
-        tenantModel.findOne({_id: id}, function (err, tenant) {
+        tenantModel.findOne({
+            _id: id
+        }, function (err, tenant) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting tenant.',
@@ -48,10 +51,10 @@ module.exports = {
      */
     create: function (req, res) {
         var tenant = new tenantModel({
-			name : req.body.name,
-			created : req.body.created,
-			password : req.body.password,
-			email : req.body.email
+            name: req.body.name,
+            created: req.body.created,
+            password: req.body.password,
+            email: req.body.email
 
         });
 
@@ -71,7 +74,9 @@ module.exports = {
      */
     update: function (req, res) {
         var id = req.params.id;
-        tenantModel.findOne({_id: id}, function (err, tenant) {
+        tenantModel.findOne({
+            _id: id
+        }, function (err, tenant) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting tenant',
@@ -85,10 +90,10 @@ module.exports = {
             }
 
             tenant.name = req.body.name ? req.body.name : tenant.name;
-			tenant.created = req.body.created ? req.body.created : tenant.created;
-			tenant.password = req.body.password ? req.body.password : tenant.password;
-			tenant.email = req.body.email ? req.body.email : tenant.email;
-			
+            tenant.created = req.body.created ? req.body.created : tenant.created;
+            tenant.password = req.body.password ? req.body.password : tenant.password;
+            tenant.email = req.body.email ? req.body.email : tenant.email;
+
             tenant.save(function (err, tenant) {
                 if (err) {
                     return res.status(500).json({
@@ -115,6 +120,21 @@ module.exports = {
                 });
             }
             return res.status(204).json();
+        });
+    },
+
+    generateDummies: function (req, res) {
+        var num = req.body.num;
+        console.log(num);
+        factory(num);
+        tenantModel.find(function (err, tenants) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when getting tenant.',
+                    error: err
+                });
+            }
+            return res.json(tenants);
         });
     }
 };
