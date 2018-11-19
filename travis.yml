@@ -1,0 +1,24 @@
+sudo: required
+
+services:
+  - docker
+
+language: node_js
+dist: trusty
+
+node_js:
+  - "lts/*"
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  - DOCKER_IMAGE=mkoplan/najemniki:0.4
+
+script:
+  - docker build -t "$DOCKER_IMAGE" .
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push "$DOCKER_IMAGE"
