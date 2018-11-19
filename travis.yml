@@ -6,13 +6,6 @@ services:
 language: node_js
 dist: trusty
 
-node_js:
-  - "lts/*"
-
-cache:
-  directories:
-  - $HOME/.m2
-
 env:
   - DOCKER_IMAGE=mkoplan/najemniki:0.4
 
