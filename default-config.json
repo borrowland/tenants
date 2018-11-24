@@ -1,0 +1,19 @@
+{
+    "prod": {
+        "v1": {
+            "equipmentEnabled": true
+        },
+        "v2": {
+            "equipmentEnabled": true
+        }
+    },
+
+    "dev": {
+        "v1": {
+            "equipmentEnabled": true
+        },
+        "v2": {
+            "equipmentEnabled": true
+        }
+    }
+}

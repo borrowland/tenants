@@ -125,7 +125,6 @@ module.exports = {
 
     generateDummies: function (req, res) {
         var num = req.body.num;
-        console.log(num);
         factory(num);
         tenantModel.find(function (err, tenants) {
             if (err) {

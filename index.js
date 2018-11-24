@@ -16,8 +16,10 @@ mongoose.connect(`mongodb://${user}:${password}@${db_uri}/tenants?authSource=adm
 var db = mongoose.connection;
 
 const port = process.env.PORT || 8080;
+const environment = process.env.ENVIRONMENT || "prod";
+const version = process.env.VERSION || "v1";
 let app = express();
-let baseUrl = "/v1";
+let baseUrl = "/tenants/" + version;
 
 // body parser must be initiated before any request route
 app.use(bodyParser.urlencoded({
@@ -26,7 +28,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // init each route separately
-app.use(baseUrl + "/tenants", require("./routes/tenantRoutes"));
+app.use(baseUrl, require("./routes/tenantRoutes"));
 
 // Leave here for easy checking if the app is running.
 app.get('/', (req, res) => res.send('<h1> Tenants API running!</h1>'));
@@ -37,5 +39,5 @@ app.get('/etcd', (req, res) => res.send(JSON.stringify(config)));
 
 
 app.listen(port, function () {
-    console.log("Running server on port " + port);
+    console.log(`Running server on port ${port}. Version: ${version}  Environment: ${environment}`);
 });
