@@ -1,5 +1,7 @@
 var tenantModel = require('../models/tenantModel.js');
 var factory = require('../models/factory.js');
+const request = require("request");
+const promise = require("request-promise");
 
 /**
  * tenantController.js
@@ -19,7 +21,34 @@ module.exports = {
                     error: err
                 });
             }
-            return res.json(tenants);
+
+            tenants = tenants.map(tenant => {
+                return tenant.toObject();
+            });
+
+            let promises = []
+            for (let tenant of tenants) {
+                try {
+                    promises.push(promise.get({
+                        url: `http://equipment:8080/equipment/v1`,
+                        qs: {
+                            "ownerId": tenant._id.toString()
+                        }
+                    }).then(function (equipment) {
+                        tenant["equipment"] = JSON.parse(equipment);
+                        return tenant;
+                    }));
+                } catch (ex) {
+                    console.error(ex);
+                }
+            }
+
+            Promise.all(promises).then(function (tenants) {
+                return res.json(tenants);
+            }).catch(err => {
+                console.log(err);
+                res.status(503).json("Equipment service unavailable");
+            });
         });
     },
 

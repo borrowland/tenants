@@ -8,7 +8,9 @@
     "finalhandler": "^1.1.1",
     "lodash": "^4.17.11",
     "mongoose": "^5.3.9",
-    "node-etcd": "^7.0.0"
+    "node-etcd": "^7.0.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   },
   "scripts": {
     "dev": "nodemon index.js",
