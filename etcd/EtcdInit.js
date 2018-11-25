@@ -1,6 +1,7 @@
-let Etcd = require("node-etcd");
-let etcdUrls = process.env.ETCD_URL || "192.168.99.100:2379";
-let etcd = new Etcd(etcdUrls);
+const _ = require("lodash");
+const Etcd = require("node-etcd");
+const etcdUrls = process.env.ETCD_URL || "192.168.99.100:2379";
+const etcd = new Etcd(etcdUrls);
 
 const version = process.env.VERSION || "v1";
 const environment = process.env.ENVIRONMENT || "prod";
@@ -11,8 +12,41 @@ const defaultConfig = require("../default-config.json");
 // Get default configuration from env and default-config.json
 var config = {
     "equipmentEnabled": process.env.ETCD_EQUIPMENTENABLED == "true" ||
-        defaultConfig[environment][version]["equipmentEnabled"] || false
+        defaultConfig[environment][version]["equipmentEnabled"] || false,
+    // "services": {
+    //     "equipment": {
+    //         "dev": {
+    //             "v1": {
+    //                 27: '127:0.0.1:8081/equipment/v1'
+    //             },
+    //             "v2": {}
+    //         },
+    //     }
+    // }
 };
+
+function discoverService(name, env, ver) {
+    let service = `${name}/${env}/${ver}`
+    let watcher = etcd.watcher(`${service}/routes`,
+        null, {
+            recursive: true
+        },
+    );
+    watcher.on("change", (val) => {
+        try {
+            let url = JSON.parse(val.node.value);
+            let key = val.node.key.split("/").pop();
+            _.set(config, ["services", name, env, ver, `_${key}`], `${url.hostname}:${url.port}/${name}/${ver}`);
+        } catch (ex) {
+            console.error(ex);
+            let key = val.node.key.split("/").pop();
+            console.log("removing", key);
+            _.unset(config, `services.${name}.${env}.${ver}._${key}`);
+        }
+    });
+}
+
+discoverService("equipment", "dev", "v1");
 
 
 // Get initial values
