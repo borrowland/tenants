@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 //init ETCD and watch variables
-var config = require("./etcd/EtcdInit");
+global.config = require("./etcd/EtcdInit");
 
 var user = process.env.DB_USER || "root";
 var password = process.env.DB_PASSWORD || "password";

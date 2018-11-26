@@ -22,34 +22,44 @@ module.exports = {
                 });
             }
 
+            console.log(config);
+            if (config.equipmentEnabled == false) {
+                return res.json(tenants)
+            }
+
             tenants = tenants.map(tenant => {
                 return tenant.toObject();
             });
 
-            let promises = []
-            for (let tenant of tenants) {
-                try {
-                    promises.push(promise.get({
-                        url: `http://equipment:8080/equipment/v1`,
-                        qs: {
-                            "ownerId": tenant._id.toString()
+            getServiceUrl("equipment", "dev", "v1", function (err, url) {
+                    if (err) {
+                        return res.status(503).json(err);
+                    }
+                    let promises = []
+                    for (let tenant of tenants) {
+                        try {
+                            promises.push(promise.get({
+                                url: `http://${url}`,
+                                qs: {
+                                    "ownerId": tenant._id.toString()
+                                }
+                            }).then(function (equipment) {
+                                tenant["equipment"] = JSON.parse(equipment);
+                                return tenant;
+                            }));
+                        } catch (ex) {
+                            console.error(ex);
                         }
-                    }).then(function (equipment) {
-                        tenant["equipment"] = JSON.parse(equipment);
-                        return tenant;
-                    }));
-                } catch (ex) {
-                    console.error(ex);
-                }
-            }
-
-            Promise.all(promises).then(function (tenants) {
-                return res.json(tenants);
-            }).catch(err => {
-                console.log(err);
-                res.status(503).json("Equipment service unavailable");
+                    }
+        
+                    Promise.all(promises).then(function (tenants) {
+                        return res.json(tenants);
+                    }).catch(err => {
+                        console.log(err);
+                        res.status(503).json("Equipment service unavailable");
+                    });
+                });
             });
-        });
     },
 
     /**

@@ -13,20 +13,40 @@ const defaultConfig = require("../default-config.json");
 var config = {
     "equipmentEnabled": process.env.ETCD_EQUIPMENTENABLED == "true" ||
         defaultConfig[environment][version]["equipmentEnabled"] || false,
-    // "services": {
-    //     "equipment": {
-    //         "dev": {
-    //             "v1": {
-    //                 27: '127:0.0.1:8081/equipment/v1'
-    //             },
-    //             "v2": {}
-    //         },
-    //     }
-    // }
 };
 
-function discoverService(name, env, ver) {
-    let service = `${name}/${env}/${ver}`
+global.getServiceUrl = function (name, env, ver, callback) {
+    if (_.get(config, ["services", name, env, ver])) {
+        callback(null, _.sample(config["services"][name][env][ver]));
+    } else {
+        discoverService(name, env, ver, function (err, url) {
+            callback(err, url);
+        });
+    }
+}
+
+global.discoverService = function(name, env, ver, callback) {
+    let service = `${name}/${env}/${ver}/routes`;
+    etcd.get(service, {
+        recursive: true
+    }, function (err, res) {
+        try {
+            for (let node of res.node.nodes) {
+                let url = JSON.parse(node.value);
+                let key = node.key.split("/").pop();
+                _.set(config, ["services", name, env, ver, `_${key}`], `${url.hostname}:${url.port}/${name}/${ver}`);
+            }
+            callback(null, _.sample(config["services"][name][env][ver]));
+        } catch (ex) {
+            console.error(ex);
+            callback(Error(`Error discovering ${service}`), null);
+        }
+    });
+    watchService(name, env, ver);
+}
+
+global.watchService = function (name, env, ver) {
+    let service = `${name}/${env}/${ver}`;
     let watcher = etcd.watcher(`${service}/routes`,
         null, {
             recursive: true
@@ -46,16 +66,13 @@ function discoverService(name, env, ver) {
     });
 }
 
-discoverService("equipment", "dev", "v1");
-
-
 // Get initial values
 etcd.get(root, {
     recursive: true
 }, function (err, res) {
     try {
-        for (let i = 0; i < res.node.nodes.length; i++) {
-            processConfig(res.node.nodes[i]);
+        for (let node of res.node.nodes) {
+            processConfig(node);
         }
     } catch (ex) {
         console.error(ex);
