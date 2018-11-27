@@ -40,7 +40,7 @@ app.get('/v1/demo/info', (req, res) => {
     let a = {
         "clani": ["jg1278", "mk7509"],
         "opis_projekta": "Nas projekt implementira aplikacijo za izposojo opreme.",
-        "mikrostoritve": ["http://159.122.186.19:30001/tenants/v1", "http://159.122.186.19:32385/equipment/v1"],
+        "mikrostoritve": ["http://159.122.186.19:30001/tenants/v1", "http://159.122.186.19:30002/equipment/v1"],
         "github": ["https://github.com/borrowland/tenants", "https://github.com/borrowland/equipment"],
         "travis": ["https://travis-ci.org/borrowland/tenants", "https://travis-ci.org/borrowland/equipment"],
         "dockerhub": ["https://hub.docker.com/r/mkoplan/tenants/", "https://hub.docker.com/r/mkoplan/equipment/"]

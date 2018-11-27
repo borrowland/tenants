@@ -1,18 +1,43 @@
-apiVersion: apps/v1beta1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: tenants-deployment
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.17.0 (a74acad)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: tenants
+  name: tenants
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
+      creationTimestamp: null
       labels:
-        app: tenants
+        io.kompose.service: tenants
     spec:
       containers:
-        - image: mkoplan/tenants:0.5
+        - env:
+            - name: DB_PASSWORD
+              value: password
+            - name: DB_URI
+              value: mongo-tenants:27017
+            - name: DB_USER
+              value: tenants
+            - name: ENVIRONMENT
+              value: dev
+            - name: ETCD_EQUIPMENTENABLED
+              value: "false"
+            - name: ETCD_URL
+              value: etcd:2379
+            - name: VERSION
+              value: v1
+          image: mkoplan/tenants:0.5
           name: tenants
           ports:
             - containerPort: 8080
-              name: server
-              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}
