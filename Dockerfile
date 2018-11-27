@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:8-alpine
 RUN mkdir /tenants
 WORKDIR /tenants
 COPY . /tenants
