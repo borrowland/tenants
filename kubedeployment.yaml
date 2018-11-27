@@ -34,7 +34,7 @@ spec:
               value: etcd:2379
             - name: VERSION
               value: v1
-          image: mkoplan/tenants:0.5
+          image: mkoplan/tenants:0.5.1
           name: tenants
           ports:
             - containerPort: 8080
