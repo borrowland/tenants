@@ -1,0 +1,18 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: tenants-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tenants
+    spec:
+      containers:
+        - image: mkoplan/tenants:0.5
+          name: tenants
+          ports:
+            - containerPort: 8080
+              name: server
+              protocol: TCP
