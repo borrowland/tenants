@@ -27,7 +27,7 @@ spec:
             - name: HOST
               value: tenants
             - name: HOST_PORT
-              value: 8080
+              value: "8080"
             - name: DB_URI
               value: mongo:27017
             - name: DB_USER
@@ -39,7 +39,7 @@ spec:
             - name: ETCD_URL
               value: etcd:2379
             - name: VERSION
-              value: v1
+              value: "v1"
           image: mkoplan/tenants:0.5.2
           name: tenants
           ports:
