@@ -22,10 +22,16 @@ spec:
         - env:
             - name: DB_PASSWORD
               value: password
-            - name: DB_URI
-              value: mongo-tenants:27017
-            - name: DB_USER
+            - name: ETCD_PREF_EQUI_VER
+              value: "v1"
+            - name: HOST
               value: tenants
+            - name: HOST_PORT
+              value: 8080
+            - name: DB_URI
+              value: mongo:27017
+            - name: DB_USER
+              value: borrowland
             - name: ENVIRONMENT
               value: dev
             - name: ETCD_EQUIPMENTENABLED
@@ -34,7 +40,7 @@ spec:
               value: etcd:2379
             - name: VERSION
               value: v1
-          image: mkoplan/tenants:0.5.1
+          image: mkoplan/tenants:0.5.2
           name: tenants
           ports:
             - containerPort: 8080
