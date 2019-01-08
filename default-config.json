@@ -1,7 +1,8 @@
 {
     "prod": {
         "v1": {
-            "equipmentEnabled": true
+            "equipmentEnabled": true,
+            "preferred_equipment_ver": "v1"
         },
         "v2": {
             "equipmentEnabled": true

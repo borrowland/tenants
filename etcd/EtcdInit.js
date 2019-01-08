@@ -15,6 +15,8 @@ const defaultConfig = require("../default-config.json");
 var config = {
     "equipmentEnabled": process.env.ETCD_EQUIPMENTENABLED == "true" ||
         defaultConfig[environment][version]["equipmentEnabled"] || false,
+    "preferred_equipment_ver": process.env.ETCD_PREF_EQUI_VER ||
+        defaultConfig[environment][version]["equipmentEnabled"] || "v1",
 };
 
 function registerService() {
@@ -31,12 +33,30 @@ function registerService() {
 registerService();
 
 global.getServiceUrl = function (name, env, ver, callback) {
-    if (_.get(config, ["services", name, env, ver])) {
-        callback(null, _.sample(config["services"][name][env][ver]));
+    var prefVer = config["preferred_equipment_ver"];
+    if (prefVer != ver) {
+        if (_.get(config, ["services", name, env, prefVer])) {
+            callback(null, _.sample(config["services"][name][env][prefVer]));
+        } else {
+            discoverService(name, env, prefVer, function (err, url) {
+                if (err) {
+                    discoverService(name, env, ver, function (err, url) {
+                        callback(err, url);
+                    });
+                } else {
+                    callback(err, url);
+                }
+            });
+        }
+
     } else {
-        discoverService(name, env, ver, function (err, url) {
-            callback(err, url);
-        });
+        if (_.get(config, ["services", name, env, ver])) {
+            callback(null, _.sample(config["services"][name][env][ver]));
+        } else {
+            discoverService(name, env, ver, function (err, url) {
+                callback(err, url);
+            });
+        }
     }
 }
 
