@@ -1,8 +1,10 @@
 const _ = require("lodash");
+const uuidv4 = require('uuid/v4');
 const Etcd = require("node-etcd");
-const etcdUrls = process.env.ETCD_URL || "192.168.99.100:2379";
+const etcdUrls = process.env.ETCD_URL || "192.168.99.100:2376";
 const etcd = new Etcd(etcdUrls);
 
+const serviceId = uuidv4();
 const version = process.env.VERSION || "v1";
 const environment = process.env.ENVIRONMENT || "prod";
 
@@ -15,6 +17,19 @@ var config = {
         defaultConfig[environment][version]["equipmentEnabled"] || false,
 };
 
+function registerService() {
+    etcd.set(`${root}routes/${serviceId}`,
+        JSON.stringify({
+            hostname: process.env.HOST || "tenants",
+            port: process.env.HOST_PORT || "8080",
+        }), {
+            ttl: 8
+        }
+    );
+    setTimeout(registerService, 5000);
+}
+registerService();
+
 global.getServiceUrl = function (name, env, ver, callback) {
     if (_.get(config, ["services", name, env, ver])) {
         callback(null, _.sample(config["services"][name][env][ver]));
@@ -25,7 +40,7 @@ global.getServiceUrl = function (name, env, ver, callback) {
     }
 }
 
-global.discoverService = function(name, env, ver, callback) {
+global.discoverService = function (name, env, ver, callback) {
     let service = `${name}/${env}/${ver}/routes`;
     etcd.get(service, {
         recursive: true
